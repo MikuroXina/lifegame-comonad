@@ -3,11 +3,22 @@ use crate::zipper::Zipper;
 #[derive(Debug, Default, Clone, PartialEq, Eq)]
 pub struct Zipper2<T>(Zipper<Zipper<T>>);
 
+impl<I, T> FromIterator<I> for Zipper2<T>
+where
+    I: IntoIterator<Item = T>,
+    T: Default,
+{
+    fn from_iter<I2: IntoIterator<Item = I>>(iter: I2) -> Self {
+        Self(Zipper::from_iter(iter.into_iter().map(Zipper::from_iter)))
+    }
+}
+
 impl<T> Zipper2<T> {
     pub fn map<U>(self, f: impl Fn(T) -> U) -> Zipper2<U> {
         Zipper2(self.0.map(move |inner| inner.map(&f)))
     }
 
+    #[allow(clippy::type_complexity)]
     pub fn top(
         &self,
     ) -> (

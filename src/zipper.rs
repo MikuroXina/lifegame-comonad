@@ -5,6 +5,16 @@ pub struct Zipper<T> {
     right: Vec<T>,
 }
 
+impl<T: Default> FromIterator<T> for Zipper<T> {
+    fn from_iter<I: IntoIterator<Item = T>>(iter: I) -> Self {
+        Self {
+            left: vec![],
+            current: T::default(),
+            right: Vec::from_iter(iter),
+        }
+    }
+}
+
 impl<T> Zipper<T> {
     pub fn map<U>(self, f: impl Fn(T) -> U) -> Zipper<U> {
         let current = f(self.current);
