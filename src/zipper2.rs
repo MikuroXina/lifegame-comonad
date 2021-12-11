@@ -49,7 +49,7 @@ impl<T> Zipper2<T> {
 
 impl<T: Clone> Zipper2<T> {
     pub fn new(width: usize, height: usize, init: T) -> Self {
-        Self(Zipper::new(height / 2, Zipper::new(width / 2, init)))
+        Self(Zipper::new(height, Zipper::new(width, init)))
     }
 
     pub fn extract(&self) -> T {
