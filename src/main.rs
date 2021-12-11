@@ -11,6 +11,10 @@ impl LifeGame {
         Self(Zipper2::new(20, 20, false))
     }
 
+    pub fn with_pattern(pattern: Vec<Vec<bool>>) -> Self {
+        Self(Zipper2::from_iter(pattern))
+    }
+
     pub fn count_neighbors(z: &Zipper2<bool>) -> usize {
         let ((top_left, top, top_right), (left, _, right), (bottom_left, bottom, bottom_right)) =
             z.top();
