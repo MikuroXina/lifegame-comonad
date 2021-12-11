@@ -1,4 +1,4 @@
-use crate::zipper::Zipper;
+use crate::zipper::{Zipper, ZipperIter};
 
 #[derive(Debug, Default, Clone, PartialEq, Eq)]
 pub struct Zipper2<T>(Zipper<Zipper<T>>);
@@ -23,21 +23,27 @@ impl<T> Zipper2<T> {
         &self,
     ) -> (
         (Option<&T>, Option<&T>, Option<&T>),
-        (Option<&T>, &T, Option<&T>),
+        (Option<&T>, Option<&T>, Option<&T>),
         (Option<&T>, Option<&T>, Option<&T>),
     ) {
+        fn unzip<'a, T>(
+            opt: Option<(Option<&'a T>, Option<&'a T>, Option<&'a T>)>,
+        ) -> (Option<&'a T>, Option<&'a T>, Option<&'a T>) {
+            if let Some((l, c, r)) = opt {
+                (l, c, r)
+            } else {
+                (None, None, None)
+            }
+        }
         let (left, current, right) = self.0.top();
-        let left = if let Some((l, c, r)) = left.map(Zipper::top) {
-            (l, Some(c), r)
-        } else {
-            (None, None, None)
-        };
-        let right = if let Some((l, c, r)) = right.map(Zipper::top) {
-            (l, Some(c), r)
-        } else {
-            (None, None, None)
-        };
-        (left, current.top(), right)
+        let left = unzip(left.map(Zipper::top));
+        let current = unzip(current.map(Zipper::top));
+        let right = unzip(right.map(Zipper::top));
+        (left, current, right)
+    }
+
+    pub fn iter(&self) -> ZipperIter<Zipper<T>> {
+        self.0.iter()
     }
 }
 
